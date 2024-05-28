@@ -1,34 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const Card = ({ title, content, onPress, handlePress }) => {
-  // const [isPressed, setIsPressed] = useState(false);
-
-  // const handlePressIn = () => {
-  //   setIsPressed(true);
-  // };
-
-  // const handlePressOut = () => {
-  //   setIsPressed(false);
-  // };
-
+const Card = ({ title, content, location, handlePress }) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
-      // onPressIn={handlePressIn}
-      // onPressOut={handlePressOut}
-      activeOpacity={0.7} // Set the opacity when pressed
+      activeOpacity={0.7}
       style={styles.card}
     >
       <LinearGradient
-        colors={['#85EBFC', '#74ADFA']} // Define your gradient colors here
-        start={{ x: 0, y: 0 }} // Gradient starts from the left
-        end={{ x: 1, y: 0 }}   // Gradient ends on the right
+        colors={['#85EBFC', '#74ADFA']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
         style={styles.gradient}
       >
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.content}>{content}</Text>
+        {/* {location && <Text style={styles.location}>Location: {location}</Text>} */}
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -57,12 +46,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#222b3c', // Set title color to white
+    color: '#222b3c',
   },
   content: {
     fontSize: 16,
     color: '#222b3c',
-    fontFamily: "Poppins-Medium",
+  },
+  location: {
+    fontSize: 16,
+    color: '#222b3c',
+    marginTop: 5,
   },
 });
 

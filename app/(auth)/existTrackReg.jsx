@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, Dimensions, Image, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, ScrollView, StyleSheet, Dimensions, Image, TextInput, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { CameraView, Camera } from 'expo-camera/next';
 import icons from '../../constants/icons';
 import images from "../../constants/images";
 import AddSubButton from '../../components/AddSubButton';
@@ -9,7 +10,89 @@ import HomeButton from '../../components/HomeButton';
 import SaveButton from '../../components/SaveButton';
 import EditButton from '../../components/EditButton';
 
-const etr = () => {
+export default function etr() {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanned, setScanned] = useState(false);
+  const [itemReg, setItemReg] = useState({
+    ID: '',
+    NAME: '',
+    TYPE: '',
+    DESCRIPTION: '',
+    BRAND: '',
+    QUANTITY: '',
+
+  });
+  const [mediumNames, setMediumNames] = useState([]);
+  const [creationDate, setCreationDate] = useState(null);
+
+  useEffect(() => {
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    };
+
+    getCameraPermissions();
+  }, []);
+
+  const handleBarCodeScanned = ({ data }) => {
+    setScanned(true);
+    const lines = data.split('\n');
+    const newItemReg = { ...itemReg };
+
+    lines.forEach(line => {
+      if (line) {
+        const [key, value] = line.split(': ');
+        const trimmedKey = key?.trim().toUpperCase();
+        const trimmedValue = value?.trim();
+
+        if (trimmedKey && trimmedValue) {
+          newItemReg[trimmedKey] = trimmedValue;
+        }
+      }
+    });
+
+    setItemReg(newItemReg);
+
+    if (newItemReg.ID && newItemReg.TYPE && newItemReg.NAME) {
+      // console.log('Scanned ID:', newItemReg.ID);
+      // console.log('Scanned TYPE:', newItemReg.TYPE);
+      // console.log('Scanned NAME:', newItemReg.NAME);
+      fetchMediumNames(newItemReg.ID);
+    } else {
+      console.log('ID, TYPE, or NAME not found in the scanned data');
+    }
+  };
+
+  const fetchMediumNames = async (id) => {
+    try {
+      const response = await fetch(`http://172.16.76.102:8080/inventory/itemMedium/itemId/${id}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Item mediums with the same ID:', data);
+        //const itemMediumsMessage = data.map(itemMedium => `${itemMedium.MEDIUM_NAME}, ${itemMedium.MEDIUM_ID}`).join('\n');
+        // Alert.alert('Item Mediums', itemMediumsMessage);
+        const names = data.map(itemMedium => itemMedium.MEDIUM_NAME);
+        setMediumNames(names);
+
+        if (data.length > 0 && data[0].CREATED_DATE) {
+          setCreationDate(data[0].CREATED_DATE);
+        }
+      } else {
+        console.error('Failed to fetch item mediums:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching item mediums:', error);
+    }
+  };
+
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={styles.flex1} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -150}>
@@ -27,6 +110,24 @@ const etr = () => {
               />
             </View>
             <Text style={styles.title}>Existing Tracked Regular Item</Text>
+            <View style={styles.cameraContainer}>
+              <CameraView
+                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                barcodeScannerSettings={{
+                  barcodeTypes: ["qr", "pdf417"],
+                }}
+                style={StyleSheet.absoluteFillObject}
+              />
+              {scanned && (
+                <TouchableOpacity style={styles.tapAgainButton} onPress={() => setScanned(false)}>
+                  <Text style={styles.tapAgainText}>Tap to Scan Again</Text>
+                </TouchableOpacity>
+              )}
+              {!scanned && (
+                <Text style={styles.initialScanText}>Scan QR Code</Text>
+              )}
+            </View>
+            
             <View style={styles.photoContainer}>
               <Image 
                 source={icons.box}
@@ -36,25 +137,26 @@ const etr = () => {
             </View>
             
             <View style={styles.infoContainer}>
-              <Text style={styles.header}>Item Name: </Text>
-              <View style={styles.infoDeets}>
-                <Text style={styles.info}>Item ID: </Text>
-                <Text style={styles.info}>Brand: </Text>
-                <Text style={styles.info}>Description: </Text>
-                <Text style={styles.info}>Code: </Text>
-              </View>
-
-              <View style={styles.infoDeets}>
-                <Text style={styles.infoLoc}>Medium: </Text>
-                <Text style={styles.infoLoc}>Medium ID: </Text>
-              </View>
-
-              <View style={styles.infoDeets}>
-                <Text style={styles.infoType}>Date Created: </Text>
-                <Text style={styles.infoType}>Type: </Text>
-                <Text style={styles.infoType}>Quantity Type: </Text>
-                <Text style={styles.infoType}>Quantity: </Text>
-              </View>
+              {itemReg.ID || itemReg.NAME || itemReg.TYPE ||itemReg.BRAND || itemReg.DESCRIPTION || itemReg.TYPE || mediumNames.length > 0 || creationDate ? (
+                <>
+                  {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
+                  <Text style={styles.infoTitle}>Item ID:  {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
+                  <Text style={styles.infoTitle}>Brand:  {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
+                  <Text style={styles.infoTitle}>Type:  {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
+                  <Text style={styles.infoTitle}>Description:  {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
+                  
+                  {creationDate && <Text style={styles.infoTitle}>Date Created: {new Date(creationDate).toLocaleDateString()}</Text>}
+                  {mediumNames.length > 0 && (
+                    <View style={styles.mediumsContainer}>
+                      <Text style={styles.infoTitle}>Storage Mediums:</Text>
+                      {mediumNames.map((name, index) => (
+                        <Text key={index} style={styles.info}>• {name}</Text>
+                      ))}
+                    </View>
+                  )}
+                </>
+              ) : null}
+      {/* </View> */}
 
               <View style={styles.actionRow}>
                 <View style={styles.numberEditContainer}>
@@ -96,7 +198,6 @@ const etr = () => {
     </SafeAreaView>
   )
 }
-
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -146,6 +247,35 @@ const styles = StyleSheet.create({
   homeButton:{
     marginLeft: 500,
   },
+  cameraContainer:{
+    height:200,
+    width: 340,
+    flex: 0.8,
+    justifyContent: 'center',
+    position: 'relative',
+    // margin: 30,
+    marginBottom:20,
+  },
+  initialScanText: {
+    position: 'absolute',
+    alignSelf: 'center',
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  tapAgainButton: {
+    position: 'absolute',
+    bottom: 10,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(128, 128, 128, 0.7)',
+    padding: 10,
+    borderRadius: 5,
+  },
+  tapAgainText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   itemImg:{
     resizeMode: 'contain',
     width: '100%',
@@ -156,6 +286,11 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     fontSize: 25,
     marginBottom: 10,
+  },
+  infoTitle:{
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 20,
+    color: '#ffff',
   },
   infoContainer:{
     width: width/1.3, 
@@ -228,4 +363,3 @@ const styles = StyleSheet.create({
   }
 })
 
-export default etr;

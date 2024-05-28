@@ -32,7 +32,8 @@ const Home = () => {
             <CamButton
               title="Scan QR Code"
               iconname="qrcode"
-              handlePress={() => router.push('/camScreen?scanType=qr')}
+              // handlePress={() => router.push('/camScreen?scanType=qr')}
+              handlePress={() => router.push('/existTrackReg?scanType=qr')}
               containerStyles="mt-7"
             />
 
