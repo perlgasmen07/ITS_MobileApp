@@ -1,53 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Linking } from 'react-native';
+import { View, SafeAreaView,Text, StyleSheet, ActivityIndicator, Linking,ScrollView , Image, Dimensions } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import images from "../../constants/images";
+import HomeButton from '../../components/HomeButton';
+import Card from '../../components/Cards';
+import { router } from 'expo-router';
 
-const StorageLists = (props) => {
-  const [itemId, setItemId] = useState(null);
+const storageLists = () => {
+  const route = useRoute();
+  const { itemId } = route.params;
   const [itemMediums, setItemMediums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getInitialURL = async () => {
-      try {
-        const initialUrl = await Linking.getInitialURL();
-        if (initialUrl) {
-          const urlParams = new URLSearchParams(initialUrl.split('?')[1]);
-          const id = urlParams.get('itemId');
-          console.log(props)
-          console.log(initialUrl);
-          console.log(urlParams);
-          console.log(id);
-          if (id) {
-            setItemId(id);
-          }
-        }
-      } catch (error) {
-        console.error('Error getting initial URL:', error);
-      }
-    };
-
-    const handleUrl = ({ url }) => {
-      const urlParams = new URLSearchParams(url.split('?')[1]);
-      const id = urlParams.get('itemId');
-      if (id) {
-        setItemId(id);
-      }
-    };
-
-    const linkingListener = Linking.addEventListener('url', handleUrl);
-
-    getInitialURL();
-
-    return () => {
-      linkingListener.remove();
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchItemMediums = async () => {
       try {
-        const response = await fetch(`http://172.16.207.180:8080/inventory/itemMedium/itemId/${props.id}`);
+        const response = await fetch(`http://192.168.254.109:8080/inventory/itemMedium/itemId/${itemId}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -89,50 +58,85 @@ const StorageLists = (props) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}> hi + {itemId} </Text>
-      {/* {itemMediums.length > 0 ? (Item Mediums for ID: {props.itemId}
-        itemMediums.map((itemMedium, index) => (
-          <View key={index} style={styles.card}>
-            <Text>Medium Name: {itemMedium.MEDIUM_NAME}</Text>
-            <Text>Item Medium ID: {itemMedium.ITEM_MEDIUM_ID}</Text>
-            <Text>Quantity: {itemMedium.QUANTITY}</Text>
-          </View>
-        ))
-      ) : (
-        <Text>No item mediums found for this ID.</Text>
-      )} */}
+    <SafeAreaView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+    <View>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={images.logo2}
+            style={styles.logoPic}
+            resizeMode='contain' 
+          />
+          <HomeButton
+          style={styles.homeButton}
+          handlePress={() => router.push('/home')}/>
+        </View>
+        <View style={styles.titleArea}>
+          <Text style={styles.title}>Storage</Text>
+        </View>
+
+        {itemMediums.map((item) => (
+          <Card
+            key={item.MEDIUM_ID}
+            title={item.MEDIUM_NAME}
+            content={`Location: ${item.LOCATION_NAME}`}
+            // onPress={() => handlePress(item.mediumId)}
+            handlePress={() => router.push(`/storageMed?mediumIdPass=${item.MEDIUM_ID}`)}
+            style={styles.card1}
+          />
+        ))}
+
     </View>
+    </ScrollView>
+    </SafeAreaView>
   );
 };
-
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
+  titleArea:{
+    marginLeft: 20,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
+    color: 'white',
+    justifyContent: 'center',
   },
-  card: {
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: '#f9f9f9',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
+    container:{
+        flex:1,
+        backgroundColor:'#222b3c',
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-});
+    centeredContent: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logoContainer: {
+        // width: '100%',
+        // width:'60%',
+        height: height * 0.16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        marginBottom: height / 50,
+        marginLeft: 50,
+        // backgroundColor:'red'
+      },
+    logoPic: {
+        resizeMode: 'contain',
+        width: '90%',
+        height: '90%',
+        marginLeft: -90,
+        marginRight: -50,
+        // backgroundColor:'red'
+    },
+    homeButton:{
+        marginLeft: 500,
+      },
 
-export default StorageLists;
+    });
+
+
+export default storageLists;

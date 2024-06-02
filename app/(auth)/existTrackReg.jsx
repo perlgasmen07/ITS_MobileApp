@@ -1,97 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, Dimensions, Image, TextInput, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, StyleSheet, Dimensions, Image, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { CameraView, Camera } from 'expo-camera/next';
 import icons from '../../constants/icons';
 import images from "../../constants/images";
 import AddSubButton from '../../components/AddSubButton';
 import HomeButton from '../../components/HomeButton';
 import SaveButton from '../../components/SaveButton';
+import DateField from '../../components/DateField';
 import EditButton from '../../components/EditButton';
+import { useRoute } from '@react-navigation/native';
 
-export default function etr() {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
-  const [itemReg, setItemReg] = useState({
-    ID: '',
-    NAME: '',
-    TYPE: '',
-    DESCRIPTION: '',
-    BRAND: '',
-    QUANTITY: '',
-
-  });
-  const [mediumNames, setMediumNames] = useState([]);
-  const [creationDate, setCreationDate] = useState(null);
+const etr = () => {
+  // Declare state variables for date
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const route = useRoute();
+  const { itemIdPass } = route.params;
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getCameraPermissions = async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
+    const fetchItem = async () => {
+      try {
+        const response = await fetch(`http://192.168.254.109:8080/inventory/item/${itemIdPass}`);
+        const data = await response.json();
+  
+        if (response.ok) {
+          setItem(data);
+        } else {
+          console.error('Failed to fetch item:', data);
+          setError('Failed to fetch item');
+        }
+      } catch (error) {
+        console.error('Error fetching item:', error);
+        setError('Error fetching item');
+      } finally {
+        setLoading(false);
+      }
     };
-
-    getCameraPermissions();
-  }, []);
-
-  const handleBarCodeScanned = ({ data }) => {
-    setScanned(true);
-    const lines = data.split('\n');
-    const newItemReg = { ...itemReg };
-
-    lines.forEach(line => {
-      if (line) {
-        const [key, value] = line.split(': ');
-        const trimmedKey = key?.trim().toUpperCase();
-        const trimmedValue = value?.trim();
-
-        if (trimmedKey && trimmedValue) {
-          newItemReg[trimmedKey] = trimmedValue;
-        }
-      }
-    });
-
-    setItemReg(newItemReg);
-
-    if (newItemReg.ID && newItemReg.TYPE && newItemReg.NAME) {
-      // console.log('Scanned ID:', newItemReg.ID);
-      // console.log('Scanned TYPE:', newItemReg.TYPE);
-      // console.log('Scanned NAME:', newItemReg.NAME);
-      fetchMediumNames(newItemReg.ID);
+  
+    if (itemIdPass) {
+      fetchItem(itemIdPass);
     } else {
-      console.log('ID, TYPE, or NAME not found in the scanned data');
+      setLoading(false);
+      setError('Invalid item ID');
     }
-  };
+  }, [itemIdPass]);
 
-  const fetchMediumNames = async (id) => {
-    try {
-      const response = await fetch(`http://172.16.76.102:8080/inventory/itemMedium/itemId/${id}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Item mediums with the same ID:', data);
-        //const itemMediumsMessage = data.map(itemMedium => `${itemMedium.MEDIUM_NAME}, ${itemMedium.MEDIUM_ID}`).join('\n');
-        // Alert.alert('Item Mediums', itemMediumsMessage);
-        const names = data.map(itemMedium => itemMedium.MEDIUM_NAME);
-        setMediumNames(names);
-
-        if (data.length > 0 && data[0].CREATED_DATE) {
-          setCreationDate(data[0].CREATED_DATE);
-        }
-      } else {
-        console.error('Failed to fetch item mediums:', data);
-      }
-    } catch (error) {
-      console.error('Error fetching item mediums:', error);
-    }
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>{error}</Text>
+      </View>
+    );
   }
+
+  // Helper function to format date to YYYY-MM-DD
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -109,25 +91,8 @@ export default function etr() {
                 handlePress={() => router.push('/home')}
               />
             </View>
-            <Text style={styles.title}>Existing Tracked Regular Item</Text>
-            <View style={styles.cameraContainer}>
-              <CameraView
-                onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-                barcodeScannerSettings={{
-                  barcodeTypes: ["qr", "pdf417"],
-                }}
-                style={StyleSheet.absoluteFillObject}
-              />
-              {scanned && (
-                <TouchableOpacity style={styles.tapAgainButton} onPress={() => setScanned(false)}>
-                  <Text style={styles.tapAgainText}>Tap to Scan Again</Text>
-                </TouchableOpacity>
-              )}
-              {!scanned && (
-                <Text style={styles.initialScanText}>Scan QR Code</Text>
-              )}
-            </View>
-            
+
+            <Text style={styles.title}>EXISTING REGULAR TRACKED ITEM</Text>
             <View style={styles.photoContainer}>
               <Image 
                 source={icons.box}
@@ -135,61 +100,16 @@ export default function etr() {
                 resizeMode='contain' 
               />
             </View>
-            
-            <View style={styles.infoContainer}>
-              {itemReg.ID || itemReg.NAME || itemReg.TYPE ||itemReg.BRAND || itemReg.DESCRIPTION || itemReg.TYPE || mediumNames.length > 0 || creationDate ? (
-                <>
-                  {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
-                  <Text style={styles.infoTitle}>Item ID:  {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
-                  <Text style={styles.infoTitle}>Brand:  {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
-                  <Text style={styles.infoTitle}>Type:  {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
-                  <Text style={styles.infoTitle}>Description:  {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                  
-                  {creationDate && <Text style={styles.infoTitle}>Date Created: {new Date(creationDate).toLocaleDateString()}</Text>}
-                  {mediumNames.length > 0 && (
-                    <View style={styles.mediumsContainer}>
-                      <Text style={styles.infoTitle}>Storage Mediums:</Text>
-                      {mediumNames.map((name, index) => (
-                        <Text key={index} style={styles.info}>• {name}</Text>
-                      ))}
-                    </View>
-                  )}
-                </>
-              ) : null}
-      {/* </View> */}
-
-              <View style={styles.actionRow}>
-                <View style={styles.numberEditContainer}>
-                  <View style={styles.numberEdit}>
-                    <AddSubButton
-                      title="-"
-                      handlePress={() => router.push('/sign-in')}
-                    />
-                    <TextInput
-                      style={styles.textInput}
-                      keyboardType="numeric"
-                      // value={number.toString()}
-                      // onChangeText={text => setNumber(parseInt(text))}
-                    />
-                    <AddSubButton
-                      title="+"
-                      handlePress={() => router.push('/sign-in')}
-                    />
-                  </View>
-                  <View style={styles.lastModifiedDate}>
-                    <Text style={styles.dateMod}>
-                      Last Date Modified:
-                    </Text>
-                  </View>
+            <View style={styles.infoDeets}>
+              {item && item.NAME && <Text style={styles.header}>Item Name: {item.NAME}</Text>}
+              
+              <View style={styles.itemContainer}>
+                <Text style={styles.infoTitle}>Item ID: {item && item.ITEM_ID && <Text style={styles.info}>{item.ITEM_ID}</Text>}</Text>
+                <Text style={styles.infoTitle}>Description: {item && item.DESCRIPTION && <Text style={styles.info}>{item.DESCRIPTION}</Text>}</Text>
+                <Text style={styles.infoTitle}>Brand: {item && item.BRAND && <Text style={styles.info}>{item.BRAND}</Text>}</Text>
+                <Text style={styles.infoTitle}>Date Created: {item && item.CREATE_DATE && <Text style={styles.info}>{formatDate(item.CREATE_DATE)}</Text>}</Text>
+                <Text style={styles.infoTitle}>Last Modified: {item && item.LAST_MODIFIED && <Text style={styles.info}>{formatDate(item.LAST_MODIFIED)}</Text>}</Text>
                 </View>
-                <EditButton
-                  handlePress={() => router.push('/home')}
-                />
-              </View>
-
-              <View style={styles.saveButtonContainer}>
-                <SaveButton title="SAVE" />
-              </View>
             </View>
           </View>
         </ScrollView>
@@ -198,6 +118,7 @@ export default function etr() {
     </SafeAreaView>
   )
 }
+
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -247,35 +168,6 @@ const styles = StyleSheet.create({
   homeButton:{
     marginLeft: 500,
   },
-  cameraContainer:{
-    height:200,
-    width: 340,
-    flex: 0.8,
-    justifyContent: 'center',
-    position: 'relative',
-    // margin: 30,
-    marginBottom:20,
-  },
-  initialScanText: {
-    position: 'absolute',
-    alignSelf: 'center',
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  tapAgainButton: {
-    position: 'absolute',
-    bottom: 10,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(128, 128, 128, 0.7)',
-    padding: 10,
-    borderRadius: 5,
-  },
-  tapAgainText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   itemImg:{
     resizeMode: 'contain',
     width: '100%',
@@ -287,16 +179,16 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginBottom: 10,
   },
-  infoTitle:{
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 20,
-    color: '#ffff',
-  },
   infoContainer:{
-    width: width/1.3, 
+    width: width/1.3,
     color: '#ffff',
     fontFamily:"Poppins-Regular",
     fontSize: 15,
+  },
+  infoTitle:{
+    color: '#ffff',
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 20,
   },
   info:{
     color: '#ffff',
@@ -316,50 +208,80 @@ const styles = StyleSheet.create({
   infoDeets:{
     justifyContent:'space-evenly',
     marginBottom: 15,
+    alignItems: 'left',
+    // backgroundColor:'orange',
+    width: '80%'
   },
-  actionRow: {
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
     marginBottom: 15,
-    marginTop: 20,
-  },
-  numberEditContainer: {
-    flexDirection: 'column',
+    marginTop:20
   },
   numberEdit: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
-    // backgroundColor: 'yellow'
+  },
+  numberEditContainer: {
+    flexDirection: 'column',
+    // alignItems: 'center',
+    marginRight: 10,
+  },
+  lastModifiedEditContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
   },
   textInput: {
-    height: 40, 
-    width: 150, 
-    borderColor: '#fff', 
-    borderWidth: 2, 
-    borderRadius: 10, 
-    color: '#fff', 
-    fontSize: 20, 
-    textAlign: 'center',
-    
+    height: 40,
+    width: 150,
+    borderColor: '#fff',
+    borderWidth: 2,
+    borderRadius: 10,
+    color: '#fff',
+    fontSize: 20,
+    textAlign: 'center'
   },
-  lastModifiedDate: {
-    flexDirection: 'row',
-    // justifyContent: 'flex-start',
-    alignItems: 'center',
-    // backgroundColor: 'red'
+  startCon:{
+    color: '#ffff',
+    fontFamily:"Poppins-Medium",
+    fontSize: 15
+  },
+  endCon:{
+    color: '#ffff',
+    fontFamily:"Poppins-Medium",
+    fontSize: 15
   },
   dateMod:{
     color: '#fff',
     fontSize: 15,
     fontStyle: 'italic',
-    marginRight: 5,
+    marginTop: 10,
+  },
+  mainContainer:{
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  subContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
   },
   saveButtonContainer: {
     marginTop: 5,
     alignItems: 'center',
-  }
+  },
+  dateChild:{
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  dateParent:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 30,
+    marginTop: 20,
+  },
 })
 
+export default etr;

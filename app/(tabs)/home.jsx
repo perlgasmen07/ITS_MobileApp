@@ -33,14 +33,20 @@ const Home = () => {
               title="Scan QR Code"
               iconname="qrcode"
               // handlePress={() => router.push('/camScreen?scanType=qr')}
-              handlePress={() => router.push('/existTrackReg?scanType=qr')}
+              // handlePress={() => router.push('/testing?scanType=qr')}
+              handlePress={() => router.push('scanPage?scanType=qr')}
               containerStyles="mt-7"
             />
 
             <CamButton
               title="Scan Barcode"
               iconname="barcode"
-              handlePress={() => router.push('/camScreen?scanType=barcode')}
+              // handlePress={() => router.push('/camScreen?scanType=barcode')}
+              handlePress={() => router.push('/editETR')}
+              // handlePress={() => router.push('/editETC')}
+              // handlePress={() => router.push('/editUntrack')}
+              // handlePress={() => router.push('/storageEdit')}
+              // handlePress={() => router.push('/unexist')}
               containerStyles="mt-100"
             />
           </View>

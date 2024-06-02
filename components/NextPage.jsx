@@ -1,18 +1,18 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import icons from "../constants/icons";
 
-const SaveButton = ({ title, onPress,handlePress, isLoading, style }) => {
+
+const NextPage = ({ title, onPress,handlePress, isLoading }) => {
   return (
     <TouchableOpacity 
       onPress={handlePress}
+      
       activeOpacity={0.7}
       style={[
-        styles.defaultStyle, style,
+        styles.container,
         isLoading ? { opacity: 0.5 } : null
-      ]}
-      >
+      ]}>
 
       <LinearGradient
         colors={['#85EBFC', '#74ADFA']}
@@ -20,31 +20,29 @@ const SaveButton = ({ title, onPress,handlePress, isLoading, style }) => {
         end={{ x: 1, y: 0 }}
         style={styles.gradient}
       >
-        <Image 
-        source={icons.save}
-        style={styles.save}
-        resizeMode='contain' 
-        />
-        {/* <Text style={styles.buttonText}>{title}</Text> */}
+        <Text style={styles.buttonText}>{title}</Text>
       </LinearGradient>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  defaultStyle: {
+  container: {
     borderRadius: 10,
     overflow: 'hidden', // Ensure that the gradient doesn't overflow
     justifyContent: 'center',
     alignItems: 'center',
+    // width: 100,
+    // minHeight: 70,
     flexDirection: 'row', // Ensure icon and text stack vertically
+    // marginBottom: 10,
+    // marginTop: 10,
     margin:5,
   },
   gradient: {
     padding: 10,
     alignItems: 'center',
     borderRadius: 5,
-    flex: 1,
   },
   buttonText: {
     color: 'white',
@@ -59,4 +57,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SaveButton;
+export default NextPage;

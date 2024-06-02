@@ -11,9 +11,25 @@ const AuthLayout = () => {
           options={{
             headerShown: false
           }}
+          
         />
         <Stack.Screen
           name="existTrackReg"
+          options={{
+            headerShown: false
+          }}
+          initialParams={{ itemIdPass: 1 }}
+        />
+        <Stack.Screen
+          name="dummyPage"
+          options={{
+            headerShown: false
+          }}
+          initialParams={{ itemPass: 1 }}
+        />
+        {/* from testing to existTrackReg, parameter = itemId */}
+        <Stack.Screen
+          name="testing"
           options={{
             headerShown: false
           }}
@@ -23,18 +39,24 @@ const AuthLayout = () => {
           options={{
             headerShown: false
           }}
+          initialParams={{ itemIdPass: 1 }}
         />
+      
         <Stack.Screen
           name="storageLists"
           options={{
             headerShown: false
           }}
+          initialParams={{ itemId: 1 }}
+
         />
         <Stack.Screen
           name="itemLists"
           options={{
             headerShown: false
           }}
+          initialParams={{ mediumId: 1 }}
+
         />
         <Stack.Screen
           name="newItem"
@@ -60,6 +82,7 @@ const AuthLayout = () => {
           options={{
             headerShown: false
           }}
+          initialParams={{ itemIdPass: 1 }}
         />
         <Stack.Screen
           name="editUntrack"
@@ -72,9 +95,16 @@ const AuthLayout = () => {
           options={{
             headerShown: false
           }}
+          initialParams={{ mediumIdPass: 1 }}
         />
         <Stack.Screen
           name="storageEdit"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="scanPage"
           options={{
             headerShown: false
           }}
