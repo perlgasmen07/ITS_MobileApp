@@ -31,15 +31,18 @@ const SignIn = ({ navigation }) => {
             resizeMode='contain' 
           />
 
-          <FormField 
+          {/* <FormField 
             title="Password"
             value={form.password}
             handleChangeText={(e) => setForm({...form, password: e})}
             otherStyles={{ marginTop: -70 }}
-          />
+          /> */}
+
+          <Text style={styles.title}>Welcome back,</Text>
+          <Text style={styles.title1}>Tracker!</Text>
 
           <CustomButton
-            title="Sign In"
+            title="Home"
             handlePress={() => router.push('/home')}
             // handlePress={() => navigation.navigate('Home')}
             // handlePress={submit}
@@ -55,6 +58,28 @@ const SignIn = ({ navigation }) => {
 const { width,height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  title:{
+    color: '#ffff',
+    fontFamily:"Poppins-Medium",
+    fontSize: 30,
+    fontStyle: 'italic',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: -60
+  },
+  title1:{
+    color: '#ffff',
+    fontFamily:"Poppins-Medium",
+    fontSize: 30,
+    fontStyle: 'italic',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    marginTop: -10,
+    marginBottom: 40,
+
+  },
   container: {
     flex: 1,
     backgroundColor: '#222b3c',

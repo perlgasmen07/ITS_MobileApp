@@ -30,11 +30,11 @@ const editETC = () => {
               handlePress={() => router.push('/home')}/>
             </View>
             
-            <Text style={styles.title1}>Edit Existing Tracked </Text>
-            <Text style={styles.title}>Consumable Item</Text>
+            <Text style={styles.title1}>EDIT CONSUMABLE</Text>
+            <Text style={styles.title}>ITEM MEDIUM</Text>
 
             <View style={styles.infoContainer}>
-                <Text style={styles.info}>Item Name</Text>
+                {/* <Text style={styles.info}>Item Name</Text>
                 <TextInput
                     style={styles.inputInfo}
                 />
@@ -49,7 +49,7 @@ const editETC = () => {
                 <Text style={styles.info}>Medium</Text>
                 <TextInput
                 style={styles.inputInfo}
-                />
+                /> */}
 
               <View style={styles.dateParent}>
                 <View style={styles.dateChild}>
@@ -64,17 +64,20 @@ const editETC = () => {
                 </View>
               </View>
 
-              <View style={styles.parent}>
-                {/* <View style={styles.child}>
-                  <View style={styles.inputRow}>
+              <Text style={styles.info1}>Quantity</Text> 
+              <View style={styles.parent}>               
+                <View style={styles.child}>
+                   <View style={styles.inputRow}> 
+                  
                     <View style={styles.numberEdit}>
+                        
                       <AddSubButton
                         title="-"
                         handlePress={() => router.push('/sign-in')}
                         containerStyles="mt-100"
                       />
                       <TextInput
-                        style={{height: 40, width:150, borderColor: '#fff', borderWidth: 2, borderRadius:10, color: '#fff', fontSize:20, textAlign: 'center' }}
+                        style={{height: 40, width:250, borderColor: '#fff', borderWidth: 2, borderRadius:10, color: '#fff', fontSize:20, textAlign: 'center' }}
                         keyboardType="numeric"
                         // value={number.toString()}
                         // onChangeText={text => setNumber(parseInt(text))}
@@ -85,23 +88,16 @@ const editETC = () => {
                         containerStyles="mt-100"
                       />
                     </View>
-                  </View>
+                   </View> 
+                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} /> 
+                 </View> 
+               </View>
+            </View> 
 
-                  <View style={styles.lastParent}>
-                    <View style={styles.lastModifiedDate}>
-                      <Text style={styles.dateMod}>
-                        Last Date Modified:
-                      </Text>
-                    </View>
-                  </View>
-                  
-                </View> */}
-                {/* <View style={styles.saveButton}> */}
-                  <SaveButton title="SAVE" />
-                {/* </View> */}
+            
 
-              </View>
-            </View>
+
+            
           </View>
         </ScrollView>
         <StatusBar backgroundColor="bg-primary" style='light'/>
@@ -190,7 +186,14 @@ const styles = StyleSheet.create({
     info:{
         color: '#ffff',
         fontFamily:"Poppins-Regular",
-        fontSize: 20
+        fontSize: 20,
+    },
+    info1:{
+      color: '#ffff',
+      fontFamily:"Poppins-Regular",
+      fontSize: 20,
+      textAlign: 'left',
+      marginBottom: -5
     },
     infoLoc:{
         color: '#ffff',

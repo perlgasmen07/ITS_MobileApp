@@ -30,8 +30,8 @@ const editUntrack = () => {
               handlePress={() => router.push('/home')}/>
             </View>
             
-            <Text style={styles.title1}>Edit Unracked Item</Text>
-            
+            <Text style={styles.title1}>EDIT UNTRACKED</Text>
+            <Text style={styles.title}>ITEM MEDIUM</Text>
 
             <View style={styles.infoContainer}>
                 <Text style={styles.info}>Item Name</Text>
@@ -52,11 +52,9 @@ const editUntrack = () => {
                 />
 
 
-              <View style={styles.parent}>
-                <View style={styles.child}>
-                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} />
+<View style={styles.saveButtonContainer}>
+                  <SaveButton title="SAVE" />
                 </View>
-              </View>
             </View>
           </View>
         </ScrollView>
@@ -70,19 +68,19 @@ const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     title1: {
-      fontSize: 23,
-      fontWeight: 'bold',
-      color: 'white',
-      marginBottom: 1,
-      fontFamily: 'Poppins-Bold'
-    },
-    title: {
-      fontSize: 23,
-      fontWeight: 'bold',
-      color: 'white',
-      marginBottom: height / 20,
-      fontFamily: 'Poppins-Bold'
-    },
+        fontSize: 23,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 1,
+        fontFamily: 'Poppins-Bold'
+      },
+      title: {
+        fontSize: 23,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: height / 20,
+        fontFamily: 'Poppins-Bold'
+      },
     container:{
         flex:1,
         backgroundColor:'#222b3c',
@@ -130,6 +128,7 @@ const styles = StyleSheet.create({
         fontFamily:"Poppins-Regular",
         fontSize: 15,
         //backgroundColor: 'pink'
+        marginTop: 30
     },
     inputInfo:{
         height: 40, 

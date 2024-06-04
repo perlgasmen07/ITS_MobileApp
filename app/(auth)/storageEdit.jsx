@@ -29,7 +29,7 @@ const storageEdit = () => {
               handlePress={() => router.push('/home')}/>
             </View>
             
-            <Text style={styles.title1}>Edit Storage Medium</Text>
+            <Text style={styles.title1}>EDIT STORAGE MEDIUM</Text>
 
             <View style={styles.infoContainer}>
                 <Text style={styles.info}>Storage Name</Text>
@@ -41,12 +41,7 @@ const storageEdit = () => {
                 style={styles.inputInfo}
                 />
 
-              <View style={styles.parent}>
-                
-                <View style={styles.child}>
-                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} />
-                </View>
-              </View>
+                    <SaveButton customStyles={{ height: 50, width:50 }} />
             </View>
           </View>
         </ScrollView>
@@ -119,7 +114,7 @@ const styles = StyleSheet.create({
         color: '#ffff',
         fontFamily:"Poppins-Regular",
         fontSize: 15,
-        marginTop:20,
+        marginTop:30,
         //backgroundColor: 'pink'
     },
     inputInfo:{

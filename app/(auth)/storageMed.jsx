@@ -11,11 +11,14 @@ import SaveButton from '../../components/SaveButton';
 import AddSubButton from '../../components/AddSubButton';
 
 const storageMed = () => {
+  const [creationDate, setCreationDate] = useState(null);
+  const [modifiedDate, setModifiedDate] = useState(null);
   const route = useRoute();
   const { mediumIdPass } = route.params;
   const [itemMediums, setItemMediums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [storedItems, setStoredItems] = useState([]);
 
   useEffect(() => {
     const fetchItemMediums = async () => {
@@ -23,7 +26,7 @@ const storageMed = () => {
         if (!mediumIdPass) {
           throw new Error('Invalid item ID');
         }
-        const url = `http://192.168.254.109:8080/inventory/medium/${mediumIdPass}`;
+        const url = `http://192.168.1.235:8080/inventory/itemMedium/${mediumIdPass}`;
         console.log('Fetching data from URL:', url); // Log the URL
 
         const response = await fetch(url);
@@ -47,6 +50,22 @@ const storageMed = () => {
       }
     };
 
+    const fetchItemsByMediumId = async (mediumIdPass) => {
+      try {
+        const response = await fetch(`http://192.168.1.235:8080/inventory/itemMedium/mediumId/${mediumIdPass}`);
+        const data = await response.json();
+    
+        if (response.ok) {
+          setStoredItems(data);
+          console.log(data);
+        } else {
+          console.error('Failed to fetch items by medium ID:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching items by medium ID:', error);
+      }
+    };
+
     fetchItemMediums();
   }, [mediumIdPass]);
 
@@ -67,6 +86,15 @@ const storageMed = () => {
   }
   console.log('Rendering itemMediums:', itemMediums);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${month}/${day}/${year}`;
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,10 +112,10 @@ const storageMed = () => {
                 handlePress={() => router.push('/home')}
               />
             </View>
-            <Text style={styles.title}>Existing Storage Medium</Text>
+            <Text style={styles.title}>EXISTING STORAGE MEDIUM</Text>
             <View style={styles.photoContainer}>
               <Image 
-                source={icons.box}
+                source={icons.imagepic}
                 style={styles.itemImg}
                 resizeMode='contain' 
               />
@@ -95,25 +123,28 @@ const storageMed = () => {
 
 
             <View style={styles.infoDeets}>
-            {itemMediums.NAME && <Text style={styles.header}>Medium Name: {itemMediums.NAME}</Text>}
-              <Text style={styles.infoTitle}>Medium ID: {itemMediums.MEDIUM_ID && <Text style={styles.info}>{itemMediums.MEDIUM_ID}</Text>}</Text>
-              <Text style={styles.infoTitle}>Location: {itemMediums.PARENT_LOCATION.NAME && <Text style={styles.info}>{itemMediums.PARENT_LOCATION.NAME}</Text>}</Text>
-              <Text style={styles.infoTitle}>Description: {itemMediums.DESCRIPTION && <Text style={styles.info}>{itemMediums.DESCRIPTION}</Text>}</Text>
-              {/* {creationDate && <Text style={styles.infoTitle}>Creation Date: <Text style={styles.info}>{creationDate}</Text></Text>} */}
+            {itemMediums.MEDIUM.NAME && <Text style={styles.header}>Storage Name: {itemMediums.MEDIUM.NAME}</Text>}
+              <Text style={styles.infoTitle}>Medium ID: {itemMediums.MEDIUM.MEDIUM_ID && <Text style={styles.info}>{itemMediums.MEDIUM.MEDIUM_ID}</Text>}</Text>
+              <Text style={styles.infoTitle}>Location: {itemMediums.MEDIUM.PARENT_LOCATION.NAME && <Text style={styles.info}>{itemMediums.MEDIUM.PARENT_LOCATION.NAME}</Text>}</Text>
+              <Text style={styles.infoTitle}>Description: {itemMediums.MEDIUM.DESCRIPTION && <Text style={styles.info}>{itemMediums.MEDIUM.DESCRIPTION}</Text>}</Text>
+              <Text style={styles.infoTitle}>Date Created: {itemMediums && itemMediums.MEDIUM.CREATE_DATE && <Text style={styles.info}>{formatDate(itemMediums.MEDIUM.CREATE_DATE)}</Text>}</Text>
+              <Text style={styles.infoTitle}>Last Date Modified: {itemMediums && itemMediums.MEDIUM.LAST_MODIFIED && <Text style={styles.info}>{formatDate(itemMediums.MEDIUM.LAST_MODIFIED)}</Text>}</Text>
             </View>
 
-            {/* <View style={styles.infoDeets}>
+            <View style={styles.infoDeets}>
              {storedItems.length > 0 && ( 
                <View style={styles.mediumsContainer}>
                  <Text style={styles.infoTitle}>Stored Items:</Text>
-                 {storedItems.map((item, index) => (
+                 {storedItems.map((itemMediums, index) => (
                    <View key={index} style={styles.mediumItem}>
-                     <Text style={styles.info}>• {item.NAME} (ID: {item.ITEM_ID})</Text>
+                     <Text style={styles.info}>• {itemMediums.ITEM.NAME} (ID: {itemMediums.ITEM.ITEM_ID})</Text>
                    </View>
                  ))}
                </View> 
               )}
-            </View> */}
+            </View>
+
+            
       
               {/* <View style={styles.actionRow}>
                 <View style={styles.numberEditContainer}>
@@ -126,6 +157,10 @@ const storageMed = () => {
                   handlePress={() => router.push('/storageEdit')}
                 />
               </View> */}
+
+                <EditButton
+                  handlePress={() => router.push('/storageEdit')}
+                />
       
               {/* <View style={styles.saveButtonContainer}>
                 <SaveButton title="SAVE" />
@@ -215,7 +250,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: height / 50,
-    backgroundColor: 'orange',
+    backgroundColor:'#222b3c',
+    padding: 20,
     marginTop: -10,
   },
   logoPic: {
@@ -230,8 +266,8 @@ const styles = StyleSheet.create({
   },
   itemImg:{
     resizeMode: 'contain',
-    width: '100%',
-    height: '100%',
+    width: '80%',
+    height: '80%',
   },
   header:{
     color: '#ffff',

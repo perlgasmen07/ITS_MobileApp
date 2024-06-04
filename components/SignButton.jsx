@@ -20,7 +20,7 @@ const CustomButton = ({ title, handlePress, containerStyles, textStyles, isLoadi
             justifyContent: 'center',
             alignItems: 'center',
             width: '90%', // Adjust width to fill the parent container
-            minWidth: 144, // Adjust minimum width to ensure button is usable
+            minWidth: 160, // Adjust minimum width to ensure button is usable
             minHeight: 42, // Adjust as needed
           }}
         >

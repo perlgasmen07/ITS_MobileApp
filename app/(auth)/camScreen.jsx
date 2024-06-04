@@ -62,7 +62,7 @@ export default function CamScreen() {
   const fetchMediumNames = async (id) => {
     try {
       // Replace the placeholder URL with your actual API endpoint to fetch item mediums
-      const response = await fetch(`http://172.16.76.175:8080/inventory/itemMedium/itemId/${id}`);
+      const response = await fetch(`http://192.168.1.235/inventory/itemMedium/itemId/${id}`);
       const data = await response.json();
 
       if (response.ok) {

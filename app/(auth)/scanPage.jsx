@@ -83,44 +83,42 @@ export default function scanPage() {
 
   const fetchMediumData = async (id) => {
     try {
-      const response = await fetch(`http://192.168.254.109:8080/inventory/itemMedium/itemId/${id}`);
+      const response = await fetch(`http://192.168.1.235:8080/inventory/itemMedium/itemId/${id}`);
       const data = await response.json();
-
+      
       if (response.ok) {
-        // Format CREATE_DATE and LAST_MODIFIED to YYYY-MM-DD format
-        const formattedData = data.map(item => {
-          const formatDate = (dateString) => {
-            if (!dateString) return null;
-            const date = new Date(dateString);
-            const month = ("0" + (date.getMonth() + 1)).slice(-2);
-            const day = ("0" + date.getDate()).slice(-2);
-            const year = date.getFullYear();
-            return `${month}-${day}-${year}`;
-          };
-
-          return {
-            ...item,
-            CREATE_DATE: formatDate(item.CREATE_DATE),
-            LAST_MODIFIED: formatDate(item.LAST_MODIFIED),
-            MEDIUM_ID: item.MEDIUM_ID // Adding mediumId to the item object
-          };
-        });
-
+        console.log(data);
+        const formatDate = (dateString) => {
+          if (!dateString) return null;
+          const date = new Date(dateString);
+          const month = ("0" + (date.getMonth() + 1)).slice(-2);
+          const day = ("0" + date.getDate()).slice(-2);
+          const year = date.getFullYear();
+          return `${month}/${day}/${year}`;
+        };
+  
+        const formattedData = data.map(item => ({
+          ...item,
+          CREATE_DATE: formatDate(item.CREATE_DATE),
+          LAST_MODIFIED: formatDate(item.LAST_MODIFIED),
+          MEDIUM_ID: item.MEDIUM_ID // Adding mediumId to the item object
+        }));
+  
         setMediumData(formattedData);
         if (formattedData.length > 0 && formattedData[0].CREATE_DATE) {
           setCreationDate(formattedData[0].CREATE_DATE);
         }
-
+  
         // Set the modifiedDate state with the LAST_MODIFIED date of the first item
         if (formattedData.length > 0 && formattedData[0].LAST_MODIFIED) {
           setModifiedDate(formattedData[0].LAST_MODIFIED);
         }
-
+  
         // Set the mediumType state with the type of the first medium
         if (formattedData.length > 0 && formattedData[0].TYPE) {
           setMediumType(formattedData[0].TYPE);
         }
-
+  
       } else {
         console.error('Failed to fetch item mediums:', data);
       }
@@ -128,10 +126,11 @@ export default function scanPage() {
       console.error('Error fetching item mediums:', error);
     }
   };
+  
 
   const fetchItemsByMediumId = async (id) => {
     try {
-      const response = await fetch(`http://192.168.254.109:8080/inventory/itemMedium/mediumId/${id}`);
+      const response = await fetch(`http://192.168.1.235:8080/inventory/itemMedium/mediumId/${id}`);
       const data = await response.json();
   
       if (response.ok) {
@@ -160,19 +159,21 @@ export default function scanPage() {
                 <Text style={styles.title}>EXISTING REGULAR TRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.box}
+                        source={icons.imagepic}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
+                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                    {mediumType && <Text style={styles.infoTitle}>Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>}
-                    {creationDate && <Text style={styles.infoTitle}>Creation Date: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {/* <Text style={styles.infoTitle}>Quantity: {item && item.ITEM.QUANTITY && <Text style={styles.info}>{item.ITEM.QUANTITY}</Text>}</Text> */}
+                    {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
+                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -180,7 +181,7 @@ export default function scanPage() {
                         <Text style={styles.infoTitle}>Storage Mediums:</Text>
                         {mediumData.map((medium, index) => (
                           <View key={index} style={styles.mediumItem}>
-                            <Text style={styles.info}>• {medium.MEDIUM_NAME} ({medium.LOCATION_NAME})</Text>
+                            <Text style={styles.info}>• {medium.MEDIUM.NAME} ({medium.MEDIUM.PARENT_LOCATION.NAME})</Text>
 
 
                           </View>
@@ -188,8 +189,41 @@ export default function scanPage() {
                       </View>
                     )}
                   </View>
+
+                  {/* <View style={styles.actionRow}>
+                        <View style={styles.numberEditContainer}>
+                          <View style={styles.lastModifiedDate}>
+                            {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
+                          </View>
+                        </View>
+                        <EditButton
+                          handlePress={() => router.push('/editItem')}
+                        />
+                  </View> */}
         
-                      <View style={styles.actionRow}>
+                      <View style={styles.bottomBtn}>
+                        <EditButton
+                            handlePress={() => router.push('/editItem')}
+                          />
+                        {/* <View style={styles.saveButtonContainer}>
+                          <SaveButton style={styles.customSave} title="SAVE" />
+                        </View> */}
+
+                        <View style={styles.redirect}>
+                          <TouchableOpacity style={styles.redirectButtonStore} onPress={() => handleRedirect(itemReg.ID)}>
+                            <LinearGradient
+                              colors={['#85EBFC', '#74ADFA']}
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 0 }}
+                              style={styles.gradient}
+                            >
+                              <Text style={styles.redirectButtonText}>See Storage</Text>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+        
+                      {/* <View style={styles.actionRow}>
                         <View style={styles.numberEditContainer}>
                           <View style={styles.numberEdit}>
                             <AddSubButton
@@ -234,7 +268,7 @@ export default function scanPage() {
                         </TouchableOpacity>
                       </View>
                   
-                    </View>
+                    </View> */}
                       
                 </>
               );
@@ -244,19 +278,20 @@ export default function scanPage() {
                 <Text style={styles.title}>EXISTING UNTRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.box}
+                        source={icons.imagepic}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
+                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                    {mediumType && <Text style={styles.infoTitle}>Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>}
-                    {creationDate && <Text style={styles.infoTitle}>Creation Date: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
+                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -264,21 +299,42 @@ export default function scanPage() {
                         <Text style={styles.infoTitle}>Storage Mediums:</Text>
                         {mediumData.map((medium, index) => (
                           <View key={index} style={styles.mediumItem}>
-                            <Text style={styles.info}>• {medium.MEDIUM_NAME} ({medium.LOCATION_NAME})</Text>
+                            <Text style={styles.info}>• {medium.MEDIUM.NAME} ({medium.MEDIUM.PARENT_LOCATION.NAME})</Text>
                           </View>
                         ))}
                       </View>
                     )}
                   </View>
+                  <View style={styles.bottomBtn}>
+                        <EditButton
+                            handlePress={() => router.push('/editItem')}
+                          />
+                        {/* <View style={styles.saveButtonContainer}>
+                          <SaveButton style={styles.customSave} title="SAVE" />
+                        </View> */}
+
+                        <View style={styles.redirect}>
+                          <TouchableOpacity style={styles.redirectButtonStore} onPress={() => handleRedirect(itemReg.ID)}>
+                            <LinearGradient
+                              colors={['#85EBFC', '#74ADFA']}
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 0 }}
+                              style={styles.gradient}
+                            >
+                              <Text style={styles.redirectButtonText}>See Storage</Text>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
         
-                  <View style={styles.actionRow}>
+                  {/* <View style={styles.actionRow}>
                         <View style={styles.numberEditContainer}>
                           <View style={styles.lastModifiedDate}>
                             {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
                           </View>
                         </View>
                         <EditButton
-                          handlePress={() => router.push('/editUntrack')}
+                          handlePress={() => router.push('/editItem')}
                         />
                       </View>
         
@@ -300,7 +356,7 @@ export default function scanPage() {
                         </TouchableOpacity>
                       </View>
                   
-                    </View>
+                    </View> */}
                   
                 </>
               );
@@ -311,19 +367,20 @@ export default function scanPage() {
                 <Text style={styles.title}>EXISTING CONSUMABLE TRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.box}
+                        source={icons.imagepic}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
+                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                    {mediumType && <Text style={styles.infoTitle}>Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>}
-                    {creationDate && <Text style={styles.infoTitle}>Creation Date: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
+                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -331,14 +388,36 @@ export default function scanPage() {
                         <Text style={styles.infoTitle}>Storage Mediums:</Text>
                         {mediumData.map((medium, index) => (
                           <View key={index} style={styles.mediumItem}>
-                            <Text style={styles.info}>• {medium.MEDIUM_NAME} ({medium.LOCATION_NAME})</Text>
+                            <Text style={styles.info}>• {medium.MEDIUM.NAME} ({medium.MEDIUM.PARENT_LOCATION.NAME})</Text>
                           </View>
                         ))}
                       </View>
                     )}
                   </View>
 
-                  <View style={styles.dateParent}>
+                  <View style={styles.bottomBtn}>
+                        <EditButton
+                            handlePress={() => router.push('/editItem')}
+                          />
+                        {/* <View style={styles.saveButtonContainer}>
+                          <SaveButton style={styles.customSave} title="SAVE" />
+                        </View> */}
+
+                        <View style={styles.redirect}>
+                          <TouchableOpacity style={styles.redirectButtonStore} onPress={() => handleRedirect(itemReg.ID)}>
+                            <LinearGradient
+                              colors={['#85EBFC', '#74ADFA']}
+                              start={{ x: 0, y: 0 }}
+                              end={{ x: 1, y: 0 }}
+                              style={styles.gradient}
+                            >
+                              <Text style={styles.redirectButtonText}>See Storage</Text>
+                            </LinearGradient>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+
+                  {/* <View style={styles.dateParent}>
                     <View style={styles.dateChild}>
                     <Text style={styles.startCon}>Start of Consumption</Text>
                     <DateField value={startDate} onChangeText={setStartDate} />
@@ -371,13 +450,13 @@ export default function scanPage() {
                           <View style={styles.lastModifiedDate}>
                             {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
                           </View>
-                        </View>
-                        <EditButton
-                          handlePress={() => router.push('/editETC')}
-                        />
-                      </View>
+                        </View> */}
+                        {/* <EditButton
+                          handlePress={() => router.push('/editItem')}
+                        /> */}
+                      {/* </View> */}
         
-                      <View style={styles.bottomBtn}>
+                      {/* <View style={styles.bottomBtn}>
                       <View style={styles.saveButtonContainer}>
                         <SaveButton style={styles.customSave} title="SAVE" />
                       </View>
@@ -395,7 +474,7 @@ export default function scanPage() {
                         </TouchableOpacity>
                       </View>
                   
-                    </View>
+                    </View> */}
                   
                 </>
               );
@@ -404,80 +483,59 @@ export default function scanPage() {
         const storageItems = mediumData.filter(medium => medium.MEDIUM_ID === itemReg.ID);
         return (
             <>
-            <Text style={styles.title}>STORAGE LOCATION</Text>
+            <Text style={styles.title}>STORAGE MEDIUM</Text>
               <View style={styles.photoContainer}>
                 <Image 
-                  source={icons.box}
+                  source={icons.imagepic}
                   style={styles.itemImg}
                   resizeMode='contain' 
                 />
               </View>
-              {itemReg.NAME && <Text style={styles.header}>Medium Name: {itemReg.NAME}</Text>}
+              {itemReg.NAME && <Text style={styles.header}>Storage Name: {itemReg.NAME}</Text>}
               <View style={styles.infoDeets}>
                 <Text style={styles.infoTitle}>Medium ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
                 <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                 <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                {creationDate && <Text style={styles.infoTitle}>Creation Date: <Text style={styles.info}>{creationDate}</Text></Text>}
+                {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
               </View>
               <View style={styles.infoDeets}>
-          {storedItems.length > 0 && (
-            <View style={styles.mediumsContainer}>
-              <Text style={styles.infoTitle}>Stored Items:</Text>
-              {storedItems.map((item, index) => (
-                <View key={index} style={styles.mediumItem}>
-                  <Text style={styles.info}>• {item.NAME} (ID: {item.ITEM_ID})</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-      
-              <View style={styles.actionRow}>
-                <View style={styles.numberEditContainer}>
-                  <View style={styles.numberEdit}>
-                    <AddSubButton
-                      title="-"
-                      handlePress={() => router.push('/sign-in')}
-                    />
-                    <TextInput
-                      style={styles.textInput}
-                      keyboardType="numeric"
-                      // value={number.toString()}
-                      // onChangeText={text => setNumber(parseInt(text))}
-                    />
-                    <AddSubButton
-                      title="+"
-                      handlePress={() => router.push('/sign-in')}
-                    />
+                {storedItems.length > 0 && (
+                  <View style={styles.mediumsContainer}>
+                    <Text style={styles.infoTitle}>Stored Items:</Text>
+                    {storedItems.map((item, index) => (
+                      <View key={index} style={styles.mediumItem}>
+                        <Text style={styles.info}>• {item.ITEM.NAME} (Item ID: {item.ITEM.ITEM_ID})</Text>
+                      </View>
+                    ))}
                   </View>
+                )}
+              </View>
+      
+              <View style={styles.actionRowStore}>
+                {/* <View style={styles.numberEditContainer}>
                   <View style={styles.lastModifiedDate}>
                     {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
                   </View>
-                </View>
+                </View> */}
                 <EditButton
                   handlePress={() => router.push('/storageEdit')}
                 />
-              </View>
-      
-              <View style={styles.bottomBtn}>
-                      <View style={styles.saveButtonContainer}>
-                        <SaveButton style={styles.customSave} title="SAVE" />
-                      </View>
 
-                      <View style={styles.redirect}>
-                        <TouchableOpacity style={styles.redirectButton} onPress={() => handleRedirect(itemReg.ID)}>
-                          <LinearGradient
-                            colors={['#85EBFC', '#74ADFA']}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 0 }}
-                            style={styles.gradient}
-                          >
-                            <Text style={styles.redirectButtonText}>See Items</Text>
-                          </LinearGradient>
-                        </TouchableOpacity>
-                      </View>
-                  
-                    </View>
+                <View style={styles.redirect}>
+                  <TouchableOpacity style={styles.redirectButtonStore} onPress={() => handleRedirect(itemReg.ID)}>
+                    <LinearGradient
+                      colors={['#85EBFC', '#74ADFA']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.gradient}
+                    >
+                      <Text style={styles.redirectButtonText}>See Items</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+
+              </View>
             </>
           );
         } else {
@@ -581,6 +639,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     textAlign: 'center',
   },
+  redirectButtonStore:{
+    width:140,
+    height: 60,
+  },
   container:{
     flex:1,
     backgroundColor:'#222b3c',
@@ -608,8 +670,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: height / 50,
-    backgroundColor:'orange',
-    // marginTop: -10
+    backgroundColor:'#222b3c',
+    padding: 20,
   },
   logoPic: {
     resizeMode: 'contain',
@@ -659,8 +721,8 @@ const styles = StyleSheet.create({
   },
   itemImg:{
     resizeMode: 'contain',
-    width: '100%',
-    height: '100%',
+    width: '80%',
+    height: '80%',
   },
   header:{
     color: '#ffff',
@@ -700,6 +762,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 15,
+    marginTop: 20,
+  },
+  actionRowStore:{
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

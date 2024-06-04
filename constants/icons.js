@@ -14,7 +14,7 @@ import view from "../assets/icons/user.png";
 import settings from "../assets/icons/settings.png";
 import save from "../assets/icons/save.png";
 import edit from "../assets/icons/edit.png";
-
+import imagepic from "../assets/icons/image.png";
 
 export default {
     eye,
@@ -32,5 +32,6 @@ export default {
     view,
     settings,
     save,
-    edit
+    edit,
+    imagepic
 };

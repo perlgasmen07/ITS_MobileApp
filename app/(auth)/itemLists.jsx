@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { View, Text, SafeAreaView, StyleSheet, Dimensions, Image, ActivityIndicator, ScrollView } from 'react-native';
-import icons from '../../constants/icons';
 import images from "../../constants/images";
 import HomeButton from '../../components/HomeButton';
 import Card from '../../components/Cards';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router'; // Ensure this import is correct
 
 const itemList = () => {
   const route = useRoute();
+  const router = useRouter(); // Ensure useRouter is correctly imported and used
   const { mediumId } = route.params;
   const [items, setItems] = useState([]);
+  const [mediumDetails, setMediumDetails] = useState(null); // State for medium details
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   console.log('Medium ID:', mediumId);
@@ -18,7 +19,7 @@ const itemList = () => {
   useEffect(() => {
     const fetchItemMediums = async () => {
       try {
-        const response = await fetch(`http://192.168.254.109:8080/inventory/itemMedium/mediumId/${mediumId}`);
+        const response = await fetch(`http://192.168.1.235:8080/inventory/itemMedium/mediumId/${mediumId}`);
         const data = await response.json();
 
         if (response.ok) {
@@ -36,11 +37,29 @@ const itemList = () => {
       }
     };
 
+    const fetchMediumDetails = async () => {
+      try {
+        const response = await fetch(`http://192.168.1.235:8080/inventory/medium/${mediumId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setMediumDetails(data);
+        } else {
+          console.error('Failed to fetch medium details:', data);
+          setError('Failed to fetch medium details');
+        }
+      } catch (error) {
+        console.error('Error fetching medium details:', error);
+        setError('Error fetching medium details');
+      }
+    };
+
     if (mediumId) {
-      fetchItemMediums(mediumId);
+      fetchItemMediums();
+      fetchMediumDetails();
     } else {
       setLoading(false);
-      setError('Invalid item ID');
+      setError('Invalid medium ID');
     }
   }, [mediumId]);
 
@@ -73,7 +92,7 @@ const itemList = () => {
       <View style={styles.container}>
         <Text style={styles.title}>{error}</Text>
       </View>
-    );r
+    );
   }
 
   return (
@@ -92,15 +111,15 @@ const itemList = () => {
             />
           </View>
           <View style={styles.titleArea}>
-            <Text style={styles.title}>Items</Text>
+            <Text style={styles.title}>Items in {mediumDetails ? mediumDetails.NAME : ''}</Text>
           </View>
 
           {items.map((item) => (
             <Card
-              key={item.ITEM_ID}
-              title={item.NAME}
-              content={`ID: ${item.ITEM_ID} || Quantity: ${item.QUANTITY} || Type: ${item.TYPE}`}
-              handlePress={() => handlePress(item.TYPE, item.ITEM_ID)}
+              key={item.ITEM_MEDIUM_ID}
+              title={item.ITEM.NAME}
+              content={`Item ID: ${item.ITEM.ITEM_ID} || Item Medium ID: ${item.ITEM_MEDIUM_ID} || Qty: ${item.QUANTITY} || Medium Type: ${item.TYPE}`}
+              handlePress={() => handlePress(item.TYPE, item.ITEM_MEDIUM_ID)}
               style={styles.card1}
             />
           ))}
@@ -113,7 +132,7 @@ const itemList = () => {
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  titleArea:{
+  titleArea: {
     marginLeft: 20,
     marginBottom: 10,
   },
@@ -123,9 +142,9 @@ const styles = StyleSheet.create({
     color: 'white',
     justifyContent: 'center',
   },
-  container:{
-    flex:1,
-    backgroundColor:'#222b3c',
+  container: {
+    flex: 1,
+    backgroundColor: '#222b3c',
   },
   centeredContent: {
     flex: 1,
@@ -148,7 +167,7 @@ const styles = StyleSheet.create({
     marginLeft: -90,
     marginRight: -50,
   },
-  homeButton:{
+  homeButton: {
     marginLeft: 500,
   },
 });

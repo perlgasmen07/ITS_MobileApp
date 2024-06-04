@@ -30,11 +30,11 @@ const editETR = () => {
               handlePress={() => router.push('/home')}/>
             </View>
             
-            <Text style={styles.title1}>Edit Existing Tracked </Text>
-            <Text style={styles.title}>Regular Item</Text>
+            <Text style={styles.title1}>EDIT REGULAR</Text>
+            <Text style={styles.title}>ITEM MEDIUM</Text>
 
             <View style={styles.infoContainer}>
-                <Text style={styles.info}>Item Name</Text>
+                {/* <Text style={styles.info}>Item Name</Text>
                 <TextInput
                     style={styles.inputInfo}
                 />
@@ -49,14 +49,12 @@ const editETR = () => {
                 <Text style={styles.info}>Medium</Text>
                 <TextInput
                 style={styles.inputInfo}
-                />
+                /> */}
 
-              <Text style={styles.info}>Quantity</Text>
-
-              <View style={styles.parent}>
-                
+              <Text style={styles.info}>Quantity</Text> 
+              <View style={styles.parent}>               
                 <View style={styles.child}>
-                  <View style={styles.inputRow}>
+                   <View style={styles.inputRow}> 
                   
                     <View style={styles.numberEdit}>
                         
@@ -77,14 +75,10 @@ const editETR = () => {
                         containerStyles="mt-100"
                       />
                     </View>
-                   </View>
-                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} />
-                </View>
-                {/* <View style={styles.saveButton}> */}
-                  {/* <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} /> */}
-                {/* </View> */}
-
-              </View>
+                   </View> 
+                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} /> 
+                 </View> 
+               </View>
             </View>
           </View>
         </ScrollView>
@@ -237,6 +231,7 @@ const styles = StyleSheet.create({
     parent:{
         flexDirection: 'row',
         justifyContent: 'center', // Add this line
+        marginTop: -10
     },
     saveButton: {
         marginLeft: 10, // Adjust the margin as needed

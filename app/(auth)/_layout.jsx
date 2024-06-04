@@ -20,13 +20,6 @@ const AuthLayout = () => {
           }}
           initialParams={{ itemIdPass: 1 }}
         />
-        <Stack.Screen
-          name="dummyPage"
-          options={{
-            headerShown: false
-          }}
-          initialParams={{ itemPass: 1 }}
-        />
         {/* from testing to existTrackReg, parameter = itemId */}
         <Stack.Screen
           name="testing"
@@ -105,6 +98,12 @@ const AuthLayout = () => {
         />
         <Stack.Screen
           name="scanPage"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="editItem"
           options={{
             headerShown: false
           }}

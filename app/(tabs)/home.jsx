@@ -42,7 +42,7 @@ const Home = () => {
               title="Scan Barcode"
               iconname="barcode"
               // handlePress={() => router.push('/camScreen?scanType=barcode')}
-              handlePress={() => router.push('/editETR')}
+              handlePress={() => router.push('/existTrackReg')}
               // handlePress={() => router.push('/editETC')}
               // handlePress={() => router.push('/editUntrack')}
               // handlePress={() => router.push('/storageEdit')}

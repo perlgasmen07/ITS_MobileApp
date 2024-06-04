@@ -7,8 +7,12 @@ import images from "../../constants/images";
 import AddSubButton from '../../components/AddSubButton';
 import HomeButton from '../../components/HomeButton';
 import SaveButton from '../../components/SaveButton';
+import DateField from '../../components/DateField';
 
-const unexist = () => {
+const editETR = () => {
+  // Declare state variables for date
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   return (
     <SafeAreaView style={styles.container}>
@@ -26,18 +30,56 @@ const unexist = () => {
               handlePress={() => router.push('/home')}/>
             </View>
             
+            <Text style={styles.title1}>EDIT ITEM INFO</Text>
+            {/* <Text style={styles.title}>REGULAR ITEM MEDIUM</Text> */}
 
             <View style={styles.infoContainer}>
-                <View style={styles.question}>
-                    <Text style={styles.info}>QR Code scanned does not exist in the database.</Text>
-                </View>
+                <Text style={styles.info}>Item Name</Text>
+                <TextInput
+                    style={styles.inputInfo}
+                />
+                <Text style={styles.info}>Brand</Text>
+                <TextInput
+                style={styles.inputInfo}
+                />
+                <Text style={styles.info}>Description</Text>
+                <TextInput
+                style={styles.inputInfo}
+                />
+                {/* <Text style={styles.info}>Medium</Text>
+                <TextInput
+                style={styles.inputInfo}
+                /> */}
+                <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} /> 
 
-              <View style={styles.parent}>
-                
+              {/* <Text style={styles.info}>Quantity</Text> 
+              <View style={styles.parent}>               
                 <View style={styles.child}>
-                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} />
-                </View>
-              </View>
+                   <View style={styles.inputRow}> 
+                  
+                    <View style={styles.numberEdit}>
+                        
+                      <AddSubButton
+                        title="-"
+                        handlePress={() => router.push('/sign-in')}
+                        containerStyles="mt-100"
+                      />
+                      <TextInput
+                        style={{height: 40, width:250, borderColor: '#fff', borderWidth: 2, borderRadius:10, color: '#fff', fontSize:20, textAlign: 'center' }}
+                        keyboardType="numeric"
+                        // value={number.toString()}
+                        // onChangeText={text => setNumber(parseInt(text))}
+                      />
+                      <AddSubButton
+                        title="+"
+                        handlePress={() => router.push('/sign-in')}
+                        containerStyles="mt-100"
+                      />
+                    </View>
+                   </View> 
+                   <SaveButton title="SAVE" customStyles={{ height: 50, width:50 }} /> 
+                 </View> 
+                </View> */}
             </View>
           </View>
         </ScrollView>
@@ -50,7 +92,14 @@ const unexist = () => {
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    info: {
+    title1: {
+      fontSize: 23,
+      fontWeight: 'bold',
+      color: 'white',
+      marginBottom: 1,
+      fontFamily: 'Poppins-Bold'
+    },
+    title: {
       fontSize: 23,
       fontWeight: 'bold',
       color: 'white',
@@ -103,8 +152,8 @@ const styles = StyleSheet.create({
         color: '#ffff',
         fontFamily:"Poppins-Regular",
         fontSize: 15,
-        marginTop:20,
         //backgroundColor: 'pink'
+        marginTop: 30
     },
     inputInfo:{
         height: 40, 
@@ -184,6 +233,7 @@ const styles = StyleSheet.create({
     parent:{
         flexDirection: 'row',
         justifyContent: 'center', // Add this line
+        marginTop: -10
     },
     saveButton: {
         marginLeft: 10, // Adjust the margin as needed
@@ -202,4 +252,4 @@ const styles = StyleSheet.create({
   
 })
 
-export default unexist;
+export default editETR;

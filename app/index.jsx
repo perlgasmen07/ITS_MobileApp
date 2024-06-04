@@ -20,7 +20,7 @@ export default function Home() {
         </View>
         <View style={styles.buttonContainer}>
           <CustomButton
-            title="Sign-in"
+            title="Get Tracking"
             handlePress={() => router.push('/sign-in')}
             // handlePress={() => navigation.navigate('Sign-in')}
             containerStyles={styles.button}
