@@ -22,6 +22,7 @@ export default function scanPage() {
     DESCRIPTION: '',
     BRAND: '',
     QUANTITY: '',
+    IMAGE: '',
   });
   const [mediumData, setMediumData] = useState([]);
   const [mediumType, setMediumType] = useState(null);
@@ -40,6 +41,11 @@ export default function scanPage() {
 
     getCameraPermissions();
   }, []);
+
+  const convertToBase64 = (byteArray) => {
+    console.log(byteArray)
+    return `data:image/jpeg;base64,${byteArray}`;
+  };
 
   // Redirecting when button is clicked
   const handleRedirect = (inputId) => {
@@ -156,24 +162,24 @@ export default function scanPage() {
         if (mediumType === 'R'){
             return (
                 <>
-                <Text style={styles.title}>EXISTING REGULAR TRACKED ITEM</Text>
+                <Text style={styles.title}>EXISTING TRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.imagepic}
+                        source={{uri: convertToBase64(itemReg.IMAGE)}}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
+                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
                     {/* <Text style={styles.infoTitle}>Quantity: {item && item.ITEM.QUANTITY && <Text style={styles.info}>{item.ITEM.QUANTITY}</Text>}</Text> */}
                     {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
-                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
-                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
+                    {/* {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>} */}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -278,20 +284,20 @@ export default function scanPage() {
                 <Text style={styles.title}>EXISTING UNTRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.imagepic}
+                        source={{uri: convertToBase64(itemReg.IMAGE)}}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
+                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
                     {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
-                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
-                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
+                    {/* {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>} */}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -364,23 +370,23 @@ export default function scanPage() {
             // IF (mediumType === 'C')
             return (
                 <>
-                <Text style={styles.title}>EXISTING CONSUMABLE TRACKED ITEM</Text>
+                <Text style={styles.title}>EXISTING TRACKED ITEM</Text>
                     <View style={styles.photoContainer}>
                       <Image 
-                        source={icons.imagepic}
+                        source={{uri: convertToBase64(itemReg.IMAGE)}}
                         style={styles.itemImg}
                         resizeMode='contain' 
                       />
                     </View>
                   {itemReg.NAME && <Text style={styles.header}>Item Name: {itemReg.NAME}</Text>}
                   <View style={styles.infoDeets}>
-                    {/* <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text> */}
+                    <Text style={styles.infoTitle}>Item ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
                     <Text style={styles.infoTitle}>Brand: {itemReg.BRAND && <Text style={styles.info}>{itemReg.BRAND}</Text>}</Text>
                     <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                     <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
                     {/* {mediumType && <Text style={styles.infoTitle}>Item Medium Type: <Text style={styles.info}>{mediumType}</Text></Text>} */}
-                    {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
-                    {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>}
+                    {/* {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                    {modifiedDate && <Text style={styles.dateMod}>Last Date Modified: <Text style={styles.dateMod}>{modifiedDate}</Text></Text>} */}
                   </View>
                   <View style={styles.infoDeets}>
                     {mediumData.length > 0 && (
@@ -486,7 +492,7 @@ export default function scanPage() {
             <Text style={styles.title}>STORAGE MEDIUM</Text>
               <View style={styles.photoContainer}>
                 <Image 
-                  source={icons.imagepic}
+                  source={{uri: convertToBase64(itemReg.IMAGE)}}
                   style={styles.itemImg}
                   resizeMode='contain' 
                 />
@@ -496,8 +502,8 @@ export default function scanPage() {
                 <Text style={styles.infoTitle}>Medium ID: {itemReg.ID && <Text style={styles.info}>{itemReg.ID}</Text>}</Text>
                 <Text style={styles.infoTitle}>Type: {itemReg.TYPE && <Text style={styles.info}>{itemReg.TYPE}</Text>}</Text>
                 <Text style={styles.infoTitle}>Description: {itemReg.DESCRIPTION && <Text style={styles.info}>{itemReg.DESCRIPTION}</Text>}</Text>
-                {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
-                {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>}
+                {/* {creationDate && <Text style={styles.infoTitle}>Date Created: <Text style={styles.info}>{creationDate}</Text></Text>}
+                {modifiedDate && <Text style={styles.infoTitle}>Last Date Modified: <Text style={styles.info}>{modifiedDate}</Text></Text>} */}
               </View>
               <View style={styles.infoDeets}>
                 {storedItems.length > 0 && (

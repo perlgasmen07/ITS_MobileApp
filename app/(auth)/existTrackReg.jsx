@@ -121,8 +121,11 @@ const etr = () => {
             <View style={styles.itemContainer}>
               <Text style={styles.infoTitle}>Item ID: {item && item.ITEM.ITEM_ID && <Text style={styles.info}>{item.ITEM.ITEM_ID}</Text>}</Text>
               <Text style={styles.infoTitle}>Item Name: {item && item.ITEM.NAME && <Text style={styles.info}>{item.ITEM.NAME}</Text>}</Text>
+              <Text style={styles.infoTitle}>Quantity: {item && item.QUANTITY && <Text style={styles.info}>{item.QUANTITY}</Text>}</Text>
               <Text style={styles.infoTitle}>Description: {item && item.ITEM.DESCRIPTION && <Text style={styles.info}>{item.ITEM.DESCRIPTION}</Text>}</Text>
               <Text style={styles.infoTitle}>Brand: {item && item.ITEM.BRAND && <Text style={styles.info}>{item.ITEM.BRAND}</Text>}</Text>
+              <Text style={styles.infoTitle}>Date Created: {item && item.ITEM.CREATE_DATE && <Text style={styles.info}>{formatDate(item.ITEM.CREATE_DATE)}</Text>}</Text>
+              <Text style={styles.infoTitle}>Last Date Modified: {item && item.ITEM.LAST_MODIFIED && <Text style={styles.info}>{formatDate(item.ITEM.LAST_MODIFIED)}</Text>}</Text>
             </View>
 
             <View style={styles.itemContainer}>
@@ -130,10 +133,12 @@ const etr = () => {
               <Text style={styles.infoTitle}>Medium Name: {item && item.MEDIUM.NAME && <Text style={styles.info}>{item.MEDIUM.NAME}</Text>}</Text>
               <Text style={styles.infoTitle}>Description: {item && item.MEDIUM.DESCRIPTION && <Text style={styles.info}>{item.MEDIUM.DESCRIPTION}</Text>}</Text>
               <Text style={styles.infoTitle}>Location: {item && item.MEDIUM.PARENT_LOCATION.NAME && <Text style={styles.info}>{item.MEDIUM.PARENT_LOCATION.NAME}</Text>}</Text>
+              <Text style={styles.infoTitle}>Date Created: {item && item.MEDIUM.CREATE_DATE && <Text style={styles.info}>{formatDate(item.MEDIUM.CREATE_DATE)}</Text>}</Text>
+              <Text style={styles.infoTitle}>Last Date Modified: {item && item.MEDIUM.LAST_MODIFIED && <Text style={styles.info}>{formatDate(item.MEDIUM.LAST_MODIFIED)}</Text>}</Text>
               </View>
 
             <View style={styles.itemContainer}>
-              <Text style={styles.infoTitle}>Date Created: {item && item.ITEM.CREATE_DATE && <Text style={styles.info}>{formatDate(item.ITEM.CREATE_DATE)}</Text>}</Text>
+              <Text style={styles.infoTitle}>Date Created: {item && item.CREATE_DATE && <Text style={styles.info}>{formatDate(item.CREATE_DATE)}</Text>}</Text>
               <Text style={styles.infoTitle}>Last Date Modified: {item && item.LAST_MODIFIED && <Text style={styles.info}>{formatDate(item.LAST_MODIFIED)}</Text>}</Text>
             </View>
               <View style={styles.infoDeets}>

@@ -117,7 +117,7 @@ const storageLists = () => {
             <Card
               key={item.ITEM_MEDIUM_ID}
               title={item.MEDIUM.NAME}
-              content={`Location: ${item.MEDIUM.PARENT_LOCATION.NAME} || Medium ID: ${item.MEDIUM.MEDIUM_ID}`}
+              content={`Location: ${item.MEDIUM.PARENT_LOCATION.NAME} || Item Medium ID: ${item.ITEM_MEDIUM_ID} || Medium ID: ${item.MEDIUM.MEDIUM_ID}`}
               // handlePress={() => router.push(`/storageMed?mediumIdPass=${item.MEDIUM.MEDIUM_ID}`)}
               handlePress={() => handlePress(item.TYPE, item.ITEM_MEDIUM_ID)}
               style={styles.card1}
